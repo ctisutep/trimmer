@@ -17,7 +17,7 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.SwingWorker;
 
-
+//class uses the methods from swingworker
 public class TrimmerDynamic extends SwingWorker<Integer, String>
 {
 	private ArrayList<String> maxAL;
@@ -27,14 +27,19 @@ public class TrimmerDynamic extends SwingWorker<Integer, String>
 	private File[] fileIn;
 	JLabel label;
 	int padding = 0;
-	int skip = 1;
+	int skip = 2;
 	PrintStream ps;
-
+	
+	//this method is basically the "main" method, it is invoked by execute()
 	@Override
 	protected Integer doInBackground() throws Exception
 	{
+		
+		//every message is posted to the publish method, that has a listener on the main class frontend
 		publish("Reading File...");
-		arr = csvToArray(fileIn, ",", 2);
+		//convert the csv file to a 2d array of strings
+		arr = csvToArray(fileIn, ",", skip);
+		//set progress reffers to the swingworker progress, in other words, the percentage of completion of this method
 		setProgress(30);
 		double max_val = Integer.MIN_VALUE;
 		double min_val = Integer.MAX_VALUE;
@@ -42,9 +47,9 @@ public class TrimmerDynamic extends SwingWorker<Integer, String>
 		boolean lookingForMin = false;
 		publish("Processing...");
 		double mid = midpoint();
-		for(int r = 29; r < arr.length; r++)
-		{ // Run through the whole file line by line
-			//Find max value
+		for(int r = 0; r < arr.length; r++)
+		{ // Run through the whole array line by line
+			//Find max value and consider it if is above a middle threshold
 			if(Double.parseDouble(arr[r][2]) > max_val && lookingForMax && Double.parseDouble(arr[r][2]) > (mid + mid * (5/100)))
 			{
 				max_val = Double.parseDouble(arr[r][2]);
@@ -56,7 +61,7 @@ public class TrimmerDynamic extends SwingWorker<Integer, String>
 				lookingForMin = true;
 				max_val = Integer.MIN_VALUE;
 			}
-
+			//looking for min below threshold
 			if(Double.parseDouble(arr[r][2]) < min_val && lookingForMin && Double.parseDouble(arr[r][2]) < (mid - mid * (5/100)))
 			{
 				min_val=Double.parseDouble(arr[r][2]);
@@ -148,6 +153,7 @@ public class TrimmerDynamic extends SwingWorker<Integer, String>
 		mid = (max + min) / 2;
 		return mid;
 	}
+	//constructor
 	TrimmerDynamic(File[] files, File out, JLabel label, int pad, int skip) throws IOException
 	{
 		this.label = label;
@@ -254,6 +260,7 @@ public class TrimmerDynamic extends SwingWorker<Integer, String>
 				}
 				while((line = reader.readLine().split(delimiter)) != null){
 					completeList.add(line);
+					//TODO: do the operations in here instead of saving as array
 				}
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
