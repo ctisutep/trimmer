@@ -46,15 +46,15 @@ public class TrimmerDynamic extends SwingWorker<Integer, String>
 		boolean lookingForMax = true;
 		boolean lookingForMin = false;
 		publish("Processing...");
-		double mid = midpoint();
+		//double mid = midpoint();
 		for(int r = 0; r < arr.length; r++)
 		{ // Run through the whole array line by line
 			//Find max value and consider it if is above a middle threshold
-			if(Double.parseDouble(arr[r][2]) > max_val && lookingForMax && Double.parseDouble(arr[r][2]) > (mid + mid * (5/100)))
-			{
+			if(Double.parseDouble(arr[r][2]) > max_val && lookingForMax)
+			{									
 				max_val = Double.parseDouble(arr[r][2]);
 			}
-			else if(Double.parseDouble(arr[r][2]) < max_val && lookingForMax && Double.parseDouble(arr[r][2]) > (mid + mid * (5/100)))
+			else if(Double.parseDouble(arr[r][2]) < max_val && lookingForMax)
 			{
 				getAverage(r-1, lookingForMax, padding);
 				lookingForMax = false;
@@ -62,11 +62,11 @@ public class TrimmerDynamic extends SwingWorker<Integer, String>
 				max_val = Integer.MIN_VALUE;
 			}
 			//looking for min below threshold
-			if(Double.parseDouble(arr[r][2]) < min_val && lookingForMin && Double.parseDouble(arr[r][2]) < (mid - mid * (5/100)))
+			if(Double.parseDouble(arr[r][2]) < min_val && lookingForMin)
 			{
 				min_val=Double.parseDouble(arr[r][2]);
 			}
-			else if(Double.parseDouble(arr[r][2]) > min_val && lookingForMin && Double.parseDouble(arr[r][2]) < (mid - mid * (5/100)))
+			else if(Double.parseDouble(arr[r][2]) > min_val && lookingForMin)
 			{
 				getAverage(r-1, lookingForMax, padding);
 				lookingForMax = true;
@@ -249,7 +249,8 @@ public class TrimmerDynamic extends SwingWorker<Integer, String>
 	}
 	
 	public String[][] csvToArray(File[] file, String delimiter, int ignoreLines) throws FileNotFoundException{
-		String[] line = null;
+		String line = null;
+		String[] row = {};
 		ArrayList<String[]> completeList = new ArrayList<String[]>();
 		for(int i = 0; i < file.length; i++){
 			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file[i])));
@@ -258,10 +259,13 @@ public class TrimmerDynamic extends SwingWorker<Integer, String>
 				for(int j = 0; j < ignoreLines; j++){
 					reader.readLine();
 				}
-				while((line = reader.readLine().split(delimiter)) != null){
-					completeList.add(line);
+				while((line = reader.readLine()) != null){
+					row = line.split(delimiter);
+					completeList.add(row);
 					//TODO: do the operations in here instead of saving as array
 				}
+				reader.close();
+				System.out.println("fINISHED " + i + "th file");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

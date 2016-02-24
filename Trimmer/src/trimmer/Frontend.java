@@ -305,7 +305,6 @@ public class Frontend {
 								{
 								case "progress":
 									progressBar.setIndeterminate(false);
-									event.get
 									//progressBar.setValue(40 + ((Integer)(event.getNewValue()) ) / 60);
 									break;
 								case "state":
@@ -391,17 +390,17 @@ public class Frontend {
 		
 		//number of files doesn't actually need to be specified
 		//TODO: remove this or change it to another function
-		JLabel lblFiles = new JLabel("# of Files");
+		JLabel lblFiles = new JLabel("Padding");
 		menuBar.add(lblFiles);
 		
-		SpinnerNumberModel model1 = new SpinnerNumberModel(1.0, 1.0, 10.0, 1.0);  
+		SpinnerNumberModel model1 = new SpinnerNumberModel(0.0, 0.0, 10.0, 1.0);  
 		spinner = new JSpinner(model1);
 		menuBar.add(spinner);
 		
-		JLabel lblSkip = new JLabel("Every n Cycle");
+		JLabel lblSkip = new JLabel("Skip lines");
 		menuBar.add(lblSkip);
 		
-		SpinnerNumberModel model2 = new SpinnerNumberModel(1.0, 1.0, 500.0, 1.0);  
+		SpinnerNumberModel model2 = new SpinnerNumberModel(2.0, 0.0, 500.0, 1.0);  
 		spinner2 = new JSpinner(model2);
 		menuBar.add(spinner2);
 		
