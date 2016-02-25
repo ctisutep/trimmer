@@ -17,7 +17,7 @@ import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.SwingWorker;
 
-
+//class uses the methods from swingworker
 public class TrimmerDynamic extends SwingWorker<Integer, String>
 {
 	private ArrayList<String> maxAL;
@@ -27,41 +27,46 @@ public class TrimmerDynamic extends SwingWorker<Integer, String>
 	private File[] fileIn;
 	JLabel label;
 	int padding = 0;
-	int skip = 1;
+	int skip = 2;
 	PrintStream ps;
-
+	
+	//this method is basically the "main" method, it is invoked by execute()
 	@Override
 	protected Integer doInBackground() throws Exception
 	{
+		
+		//every message is posted to the publish method, that has a listener on the main class frontend
 		publish("Reading File...");
-		arr = csvToArray(fileIn, ",", 2);
+		//convert the csv file to a 2d array of strings
+		arr = csvToArray(fileIn, ",", skip);
+		//set progress reffers to the swingworker progress, in other words, the percentage of completion of this method
 		setProgress(30);
 		double max_val = Integer.MIN_VALUE;
 		double min_val = Integer.MAX_VALUE;
 		boolean lookingForMax = true;
 		boolean lookingForMin = false;
 		publish("Processing...");
-		double mid = midpoint();
-		for(int r = 29; r < arr.length; r++)
-		{ // Run through the whole file line by line
-			//Find max value
-			if(Double.parseDouble(arr[r][2]) > max_val && lookingForMax && Double.parseDouble(arr[r][2]) > (mid + mid * (5/100)))
-			{
+		//double mid = midpoint();
+		for(int r = 0; r < arr.length; r++)
+		{ // Run through the whole array line by line
+			//Find max value and consider it if is above a middle threshold
+			if(Double.parseDouble(arr[r][2]) > max_val && lookingForMax)
+			{									
 				max_val = Double.parseDouble(arr[r][2]);
 			}
-			else if(Double.parseDouble(arr[r][2]) < max_val && lookingForMax && Double.parseDouble(arr[r][2]) > (mid + mid * (5/100)))
+			else if(Double.parseDouble(arr[r][2]) < max_val && lookingForMax)
 			{
 				getAverage(r-1, lookingForMax, padding);
 				lookingForMax = false;
 				lookingForMin = true;
 				max_val = Integer.MIN_VALUE;
 			}
-
-			if(Double.parseDouble(arr[r][2]) < min_val && lookingForMin && Double.parseDouble(arr[r][2]) < (mid - mid * (5/100)))
+			//looking for min below threshold
+			if(Double.parseDouble(arr[r][2]) < min_val && lookingForMin)
 			{
 				min_val=Double.parseDouble(arr[r][2]);
 			}
-			else if(Double.parseDouble(arr[r][2]) > min_val && lookingForMin && Double.parseDouble(arr[r][2]) < (mid - mid * (5/100)))
+			else if(Double.parseDouble(arr[r][2]) > min_val && lookingForMin)
 			{
 				getAverage(r-1, lookingForMax, padding);
 				lookingForMax = true;
@@ -148,6 +153,7 @@ public class TrimmerDynamic extends SwingWorker<Integer, String>
 		mid = (max + min) / 2;
 		return mid;
 	}
+	//constructor
 	TrimmerDynamic(File[] files, File out, JLabel label, int pad, int skip) throws IOException
 	{
 		this.label = label;
@@ -243,7 +249,8 @@ public class TrimmerDynamic extends SwingWorker<Integer, String>
 	}
 	
 	public String[][] csvToArray(File[] file, String delimiter, int ignoreLines) throws FileNotFoundException{
-		String[] line = null;
+		String line = null;
+		String[] row = {};
 		ArrayList<String[]> completeList = new ArrayList<String[]>();
 		for(int i = 0; i < file.length; i++){
 			BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(file[i])));
@@ -252,9 +259,13 @@ public class TrimmerDynamic extends SwingWorker<Integer, String>
 				for(int j = 0; j < ignoreLines; j++){
 					reader.readLine();
 				}
-				while((line = reader.readLine().split(delimiter)) != null){
-					completeList.add(line);
+				while((line = reader.readLine()) != null){
+					row = line.split(delimiter);
+					completeList.add(row);
+					//TODO: do the operations in here instead of saving as array
 				}
+				reader.close();
+				System.out.println("fINISHED " + i + "th file");
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
