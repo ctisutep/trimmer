@@ -305,7 +305,7 @@ public class Frontend {
 								{
 								case "progress":
 									progressBar.setIndeterminate(false);
-									event.get
+									
 									//progressBar.setValue(40 + ((Integer)(event.getNewValue()) ) / 60);
 									break;
 								case "state":
